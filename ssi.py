@@ -1,9 +1,14 @@
 import http.server
+import os
 import os.path
 import re
+import argparse
 
 SERVER_ROOT = "."
 SSI_EXTENSIONS = [".shtml", ".shtm"]
+ADDR = '127.0.0.1'
+PORT = 8080
+SSI_INCLUDE_LEVEL = 5
 
 def resolve_file_path(root, path, indexes=["index.html", "index.htm"]):
     paths = []
@@ -23,7 +28,7 @@ def read_ssi_file(file):
         return ""
 
 def do_SSI_scan(content, level=1):
-    if level > 5:
+    if level > SSI_INCLUDE_LEVEL:
         return content
 
     # <!--#include virtual="menu.cgi" -->
@@ -59,7 +64,6 @@ def do_SSI_file(file):
 
 class SSIHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        print(self.path)
         files = resolve_file_path(".", self.path)
         for file in files:
             if not os.path.exists(file):
@@ -73,10 +77,29 @@ class SSIHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-Length', str(len(content)))
                 self.end_headers()
                 self.wfile.write(content)
+                break
 
         else:
             super().do_GET()
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog='ssiwebd')
+    parser.add_argument('--bind', type=str, default=ADDR, help='Listening address')
+    parser.add_argument('-p', '--port', type=int, default=PORT, help='Listening port')
+    parser.add_argument('-r', '--root', type=str, default=SERVER_ROOT, help='Document root')
+    parser.add_argument('-e', type=str, nargs='*', default=SSI_EXTENSIONS, help='SSI extensions')
+    parser.add_argument('-l', metavar='level', type=int, default=SSI_INCLUDE_LEVEL, help='SSI include depth level')
 
-webd = http.server.HTTPServer(("",8080),SSIHTTPRequestHandler)
-webd.serve_forever()
+    args = parser.parse_args()
+    ADDR = args.bind
+    PORT = args.port
+    SERVER_ROOT = args.root
+    SSI_EXTENSIONS = args.e
+    SSI_INCLUDE_LEVEL = args.l
+
+    os.chdir(args.root)
+    webd = http.server.HTTPServer((ADDR, PORT),SSIHTTPRequestHandler)
+    try:
+        webd.serve_forever()
+    except KeyboardInterrupt:
+        print('\nssiwebd closed')
