@@ -1,4 +1,7 @@
-import http.server
+try:
+    import http.server as http_server
+except ImportError:
+    import SimpleHTTPServer as http_server
 import os
 import os.path
 import re
@@ -62,7 +65,7 @@ def do_SSI_file(file):
         content = f.read()
         return do_SSI_scan(content)
 
-class SSIHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+class SSIHTTPRequestHandler(http_server.SimpleHTTPRequestHandler):
     def do_GET(self):
         files = resolve_file_path(".", self.path)
         for file in files:
@@ -82,7 +85,8 @@ class SSIHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         else:
             super().do_GET()
 
-if __name__ == "__main__":
+def main():
+    global ADDR, PORT, SERVER_ROOT, SSI_EXTENSIONS, SSI_INCLUDE_LEVEL
     parser = argparse.ArgumentParser(prog='ssiwebd')
     parser.add_argument('--bind', type=str, default=ADDR, help='Listening address')
     parser.add_argument('-p', '--port', type=int, default=PORT, help='Listening port')
@@ -98,8 +102,11 @@ if __name__ == "__main__":
     SSI_INCLUDE_LEVEL = args.l
 
     os.chdir(args.root)
-    webd = http.server.HTTPServer((ADDR, PORT),SSIHTTPRequestHandler)
+    webd = http_server.HTTPServer((ADDR, PORT),SSIHTTPRequestHandler)
     try:
         webd.serve_forever()
     except KeyboardInterrupt:
         print('\nssiwebd closed')
+
+if __name__ == '__main__':
+    main()
