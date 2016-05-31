@@ -36,7 +36,7 @@ def do_SSI_scan(content, level=1):
 
     # <!--#include virtual="menu.cgi" -->
     # <!--#include file="footer.html" -->
-    finder = re.compile('''<!--#include (file|virtual)=(?P<quote>["'])(?P<file>.*?)(?P=quote) -->''')
+    finder = re.compile('''<!--#include (file|virtual)=(?P<quote>["'])(?P<file>.*?)(?P=quote) *?-->''')
     # equal: re.compile('''<!--#include file=(["'])(.*?)\\1 -->''')
     matches = re.finditer(finder, content)
 
