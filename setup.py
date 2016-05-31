@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+import ssiwebd
 
 here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
@@ -8,7 +9,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name = 'ssiwebd',
-    version = '0.0.1',
+    version = ssiwebd.__version__,
     description = 'Server Side Include Webd',
     long_description=long_description,
     author = 'Solomon Huang',
