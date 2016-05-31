@@ -36,7 +36,7 @@ def do_SSI_scan(content, level=1):
 
     # <!--#include virtual="menu.cgi" -->
     # <!--#include file="footer.html" -->
-    finder = re.compile('''<!--#include file=(?P<quote>["'])(?P<file>.*?)(?P=quote) -->''')
+    finder = re.compile('''<!--#include (file|virtual)=(?P<quote>["'])(?P<file>.*?)(?P=quote) -->''')
     # equal: re.compile('''<!--#include file=(["'])(.*?)\\1 -->''')
     matches = re.finditer(finder, content)
 
@@ -49,7 +49,7 @@ def do_SSI_scan(content, level=1):
         m['file'] = matched.group('file')
         ssi_lists.append(m)
 
-    print(ssi_lists)
+    #print(ssi_lists)
     result = ""
     pin = 0
     for matched in ssi_lists:
@@ -103,6 +103,8 @@ def main():
 
     os.chdir(args.root)
     webd = http_server.HTTPServer((ADDR, PORT),SSIHTTPRequestHandler)
+    print("SSIWebd start listen {}:{}. Document root: {}".format(ADDR, PORT, SERVER_ROOT))
+    print("SSI extension: {}".format(", ".join(SSI_EXTENSIONS)))
     try:
         webd.serve_forever()
     except KeyboardInterrupt:
