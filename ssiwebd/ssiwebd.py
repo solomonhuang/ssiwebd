@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 try:
     import http.server as http_server
 except ImportError:
@@ -9,7 +12,7 @@ import argparse
 
 SERVER_ROOT = "."
 SSI_EXTENSIONS = [".shtml", ".shtm"]
-ADDR = '127.0.0.1'
+ADDR = '0.0.0.0'
 PORT = 8080
 SSI_INCLUDE_LEVEL = 5
 
