@@ -26,6 +26,7 @@ def resolve_file_path(root, path, indexes=["index.html", "index.htm"]):
     return paths
 
 def read_ssi_file(file):
+    file = resolve_file_path(SERVER_ROOT, file)[0]
     try:
         with open(file, "r") as f:
             content = f.read()
@@ -53,6 +54,9 @@ def do_SSI_scan(content, level=1):
         ssi_lists.append(m)
 
     #print(ssi_lists)
+    if len(ssi_lists) == 0:
+        return content
+
     result = ""
     pin = 0
     for matched in ssi_lists:
